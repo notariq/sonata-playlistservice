@@ -1,6 +1,5 @@
 const Music = require('../models/music');
 
-// Get all music
 exports.getAllMusic = async (req, res) => {
     try {
         const music = await Music.find();
@@ -10,7 +9,6 @@ exports.getAllMusic = async (req, res) => {
     }
 };
 
-// Get a single music entry by ID
 exports.getMusicById = async (req, res) => {
     try {
         const music = await Music.findById(req.params.id);
@@ -23,7 +21,6 @@ exports.getMusicById = async (req, res) => {
     }
 };
 
-// Create a new music entry
 exports.createMusic = async (req, res) => {
     const music = new Music(req.body);
     try {
@@ -34,7 +31,6 @@ exports.createMusic = async (req, res) => {
     }
 };
 
-// Update a music entry by ID
 exports.updateMusic = async (req, res) => {
     try {
         const updatedMusic = await Music.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -47,7 +43,6 @@ exports.updateMusic = async (req, res) => {
     }
 };
 
-// Delete a music entry by ID
 exports.deleteMusic = async (req, res) => {
     try {
         const deletedMusic = await Music.findByIdAndDelete(req.params.id);
