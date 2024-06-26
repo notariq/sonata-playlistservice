@@ -1,14 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const musicRoutes = require('./routes/musicRoutes');
+const playlistRoutes = require('./routes/playlistRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
+const DB_URI = process.env.DB_URI || 'mongodb://mongo:27017/sonata-playlist';
 
 app.use(express.json());
-app.use('/music', musicRoutes);
+app.use('/api', playlistRoutes);
 
-mongoose.connect("mongodb://localhost:27017/music")
+mongoose.connect(DB_URI)
     .then(() => {
         console.log("Connected to MongoDB");
 
