@@ -1,4 +1,5 @@
 const Playlist = require('../models/playlist');
+const sendToQueue = require('../rabbitmq')
 
 exports.getAllPlaylist = async (req, res) => {
     try {
@@ -54,3 +55,24 @@ exports.deletePlaylist = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+exports.addSongToPlaylist = async (req, res) => {
+    try {
+      const { playlistId, songId } = req.body;
+      const playlist = await Playlist.findById(playlistId);
+      if (!playlist) {
+        return res.status(404).json({ message: 'Playlist not found' });
+      }
+  
+      // Check if song exists in the song database
+      sendToQueue({ songId });
+  
+      // Adding songId to the playlist
+      playlist.songs.push(songId);
+      await playlist.save();
+  
+      res.status(200).json(playlist);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  };

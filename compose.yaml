@@ -18,14 +18,27 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - '27017:27017'
+      - '28017:27017'
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
+    
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"   # RabbitMQ default port
+      - "15672:15672" # RabbitMQ management plugin
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
     networks:
       - app-network
 
 networks:
   app-network:
+    driver:
+      bridge
 
 volumes:
   mongo-data:
