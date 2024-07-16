@@ -4,7 +4,13 @@ const playlistRoutes = require('./routes/playlistRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/playlist-sonata';
+
+//prod
+//const DB_URI = process.env.DB_URI || "mongodb://mongodb:27017/playlistservice_db";
+
+//dev
+//'mongodb://localhost:27017/playlist-sonata';
+const DB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/playlist-sonata";
 
 app.use(express.json());
 app.use('/api', playlistRoutes);

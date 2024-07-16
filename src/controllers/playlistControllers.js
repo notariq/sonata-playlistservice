@@ -1,6 +1,5 @@
-const Playlist = require('../models/playlist').Playlist;
-const Favorite = require('../models/playlist').Favorite;
 const rabbitmq = require('../rabbitmq');
+const Playlist = require('../models/playlist');
 
 exports.getAllPlaylist = async (req, res) => {
     try {
