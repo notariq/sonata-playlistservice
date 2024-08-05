@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const playlistRoutes = require('./routes/playlistRoutes');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 5000;
 //'mongodb://localhost:27017/playlist-sonata';
 const DB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/playlist-sonata";
 
+app.use(cors())
 app.use(express.json());
 app.use('/api', playlistRoutes);
 

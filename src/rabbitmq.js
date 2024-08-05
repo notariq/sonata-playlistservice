@@ -1,38 +1,23 @@
 const amqp = require('amqplib/callback_api');
 
+let channel = null;
 const MQ_URI = process.env.MQ_URI || 'amqp://localhost:5672';
 
-let channel = null;
-let connection = null;
-
-const connectToRabbitMQ = () => {
-  return new Promise((resolve, reject) => {
-    amqp.connect(MQ_URI, (error0, conn) => {
-      if (error0) {
-        return reject(error0);
-      }
-      connection = conn;
-      conn.createChannel((error1, ch) => {
+// Connect to RabbitMQ
+amqp.connect(MQ_URI, (error0, connection) => {
+    if (error0) {
+        throw error0;
+    }
+    connection.createChannel((error1, ch) => {
         if (error1) {
-          return reject(error1);
+            throw error1;
         }
+        console.log('Connected to RabbitMQ');
         channel = ch;
-        resolve(channel);
-      });
     });
-  });
-};
+});
 
-const initializeRabbitMQ = async () => {
-  try {
-    await connectToRabbitMQ();
-    console.log('Connected to RabbitMQ');
-  } catch (error) {
-    console.error('Error connecting to RabbitMQ:', error);
-    throw error;
-  }
-};
-
+// Function to publish a message to a queue
 const publishToQueue = async (queueName, data) => {
     if (!channel) {
         throw new Error("Channel is not created yet");
@@ -41,6 +26,7 @@ const publishToQueue = async (queueName, data) => {
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(data)), { persistent: true });
 };
 
+// Function to consume messages from a queue
 const consumeQueue = async (queueName, callback) => {
     if (!channel) {
         throw new Error("Channel is not created yet");
@@ -54,4 +40,34 @@ const consumeQueue = async (queueName, callback) => {
     });
 };
 
-module.exports = { publishToQueue, consumeQueue , initializeRabbitMQ};
+// Function to subscribe to an exchange
+const subscribeToExchange = async (exchangeName, queueName, routingKey, callback) => {
+    if (!channel) {
+        throw new Error("Channel is not created yet");
+    }
+
+    // Declare an exchange
+    channel.assertExchange(exchangeName, 'fanout', { durable: false });
+
+    // Declare a queue
+    channel.assertQueue(queueName, { exclusive: true }, (error, q) => {
+        if (error) {
+            throw error;
+        }
+        
+        // Bind the queue to the exchange
+        channel.bindQueue(q.queue, exchangeName, routingKey);
+        
+        // Start consuming messages from the queue
+        channel.consume(q.queue, (msg) => {
+            if (msg !== null) {
+                callback(JSON.parse(msg.content.toString()));
+                channel.ack(msg);
+            }
+        }, { noAck: false });
+
+        console.log(`Subscribed to exchange '${exchangeName}' with queue '${q.queue}' and routing key '${routingKey}'`);
+    });
+};
+
+module.exports = { publishToQueue, consumeQueue, subscribeToExchange };
