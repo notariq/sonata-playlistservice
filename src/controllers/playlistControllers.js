@@ -16,6 +16,15 @@ exports.getPlaylist = async (req, res) => {
     }
 };
 
+exports.getPlaylistAll = async (req, res) => {
+    try {    
+        const playlists = await Playlist.find({createdBy: "sonata"});
+        res.status(200).json(playlists);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.getUserPlaylist = async (req, res) => {
     try {
         const { createdBy } = req.query;

@@ -4,6 +4,8 @@ const router = express.Router();
 const { authenticateToken } = require('../middleware/authMiddleware')
 
 router.get('/playlist', authenticateToken, playlistController.getPlaylist);
+router.get('/playlist/all', playlistController.getPlaylistAll);
+
 router.get('/playlist/:id', playlistController.getPlaylistById);
 router.post('/playlist', authenticateToken, playlistController.createPlaylist);
 router.put('/playlist/:id', playlistController.updatePlaylist);
