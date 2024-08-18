@@ -97,6 +97,10 @@ exports.addMusicToPlaylist = async (req, res) => {
     const playlistId = req.params.id;
     const { musicId } = req.body;
 
+    if (!musicId) {
+        return res.status(400).json({ message: 'Music id cant be null' });
+    };
+
     try {      
         const playlist = await Playlist.findById(playlistId);
         if (!playlist) {
